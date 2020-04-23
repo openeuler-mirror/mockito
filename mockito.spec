@@ -11,10 +11,6 @@ Patch0001:      fix-bnd-config.patch
 Patch0002:      fixup-ant-script.patch
 # fix build error
 Patch0003:      mockito-matcher.patch
-# Workaround for NPE in setting NamingPolicy in cglib
-Patch0004:      setting-naming-policy.patch
-# because we have old objenesis
-Patch0005:      fix-incompatible-types.patch
 BuildArch:      noarch
 BuildRequires:  javapackages-local java-devel ant objenesis cglib
 BuildRequires:  junit hamcrest aqute-bnd dos2unix
@@ -41,8 +37,6 @@ dos2unix `find -name *.java`
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
-%patch0004 -p1
-%patch0005 -p1
 %pom_add_dep net.sf.cglib:cglib:3.1 maven/mockito-core.pom
 find . -name "*.java" -exec sed -i "s|org\.mockito\.cglib|net\.sf\.cglib|g" {} +
 install -d lib/compile
@@ -73,5 +67,8 @@ sed -i -e "s|@version@|1.10.19|g" maven/mockito-core.pom
 %doc NOTICE
 
 %changelog
+* Thu Apr 23 2020 wutao <wutao61@huawei.com> 1.10.19-19
+* delete useless patches
+
 * Thu Apr 2 2020 gulining <gulining1@huawei.com> - 1.10.19-18
 - Package init
