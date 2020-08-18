@@ -1,72 +1,61 @@
-Name:           mockito
-Version:        1.10.19
-Release:        18
-Summary:        A Java mocking framework
-License:        MIT
-URL:            http://mockito.org
-Source0:        https://github.com/mockito/mockito/archive/v1.10.19.tar.gz
-# fix bnd config to resolve build error
-Patch0001:      fix-bnd-config.patch
-# fix ant script to resolve build error
-Patch0002:      fixup-ant-script.patch
-# fix build error
-Patch0003:      mockito-matcher.patch
-BuildArch:      noarch
-BuildRequires:  javapackages-local java-devel ant objenesis cglib
-BuildRequires:  junit hamcrest aqute-bnd dos2unix
-Requires:       objenesis cglib junit hamcrest
-
+Name:                mockito
+Version:             2.23.9
+Release:             1
+Summary:             Tasty mocking framework for unit tests in Java
+License:             MIT
+URL:                 https://site.mockito.org/
+BuildArch:           noarch
+Source0:             %{name}-%{version}.tar.xz
+Source1:             make-%{name}-sourcetarball.sh
+Source2:             mockito-core.pom
+Patch0:              use-unbundled-asm.patch
+BuildRequires:       maven-local mvn(junit:junit) mvn(net.bytebuddy:byte-buddy)
+BuildRequires:       mvn(net.bytebuddy:byte-buddy-agent) mvn(org.apache.felix:maven-bundle-plugin)
+BuildRequires:       mvn(org.assertj:assertj-core) mvn(org.codehaus.mojo:exec-maven-plugin)
+BuildRequires:       mvn(org.hamcrest:hamcrest-core) mvn(org.objenesis:objenesis)
+BuildRequires:       mvn(org.ow2.asm:asm)
 %description
 Mockito is a mocking framework that tastes really good. It lets you write
 beautiful tests with clean & simple API. Mockito doesn't give you hangover
 because the tests are very readable and they produce clean verification
 errors.
 
-%package help
-Summary:        This package contains help documents
-Provides:       mockito-javadoc = %{version}-%{release}
-Obsoletes:      mockito-javadoc < %{version}-%{release}
-
-%description help
-Files for help with mockito
+%package javadoc
+Summary:             Javadocs for %{name}
+%description javadoc
+This package contains the API documentation for %{name}.
 
 %prep
 %setup -q
-rm -rf `find -name *.jar` build.gradle cglib-and-asm doc gradle gradlew gradlew.bat javadoc
-dos2unix `find -name *.java`
-%patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%pom_add_dep net.sf.cglib:cglib:3.1 maven/mockito-core.pom
-find . -name "*.java" -exec sed -i "s|org\.mockito\.cglib|net\.sf\.cglib|g" {} +
-install -d lib/compile
-%pom_xpath_remove 'target[@name="javadoc"]/copy' build.xml
+%patch0
+sed -e 's/@VERSION@/%{version}/' %{SOURCE2} > pom.xml
+cat > osgi.bnd <<EOF
+Automatic-Module-Name: org.mockito
+Bundle-SymbolicName: org.mockito
+Bundle-Name: Mockito Mock Library for Java.
+Import-Package: junit.*;resolution:=optional,org.junit.*;resolution:=optional,org.hamcrest;resolution:=optional,org.mockito*;version="%{version}",*
+Private-Package: org.mockito.*
+-removeheaders: Bnd-LastModified,Include-Resource,Private-Package
+EOF
+%mvn_alias org.%{name}:%{name}-core org.%{name}:%{name}-all
 
 %build
-build-jar-repository lib/compile objenesis cglib junit hamcrest/core
-ant jar javadoc
-cd target
-bnd wrap --version 1.10.19 --output mockito-core-1.10.19.bar \
- --properties ../conf/mockito-core.bnd mockito-core-1.10.19.jar
-mv mockito-core-1.10.19.bar mockito-core-1.10.19.jar
-unzip mockito-core-1.10.19.jar META-INF/MANIFEST.MF
-sed -i -e '2iRequire-Bundle: org.hamcrest.core' META-INF/MANIFEST.MF
-jar umf META-INF/MANIFEST.MF mockito-core-1.10.19.jar
-cd ..
-sed -i -e "s|@version@|1.10.19|g" maven/mockito-core.pom
-%mvn_artifact maven/mockito-core.pom target/mockito-core-1.10.19.jar
-%mvn_alias org.mockito:mockito-core org.mockito:mockito-all
+%mvn_build -- -Dproject.build.sourceEncoding=UTF-8
 
 %install
-%mvn_install -J target/javadoc
+%mvn_install
 
 %files -f .mfiles
-%doc LICENSE
+%license LICENSE
+%doc doc/design-docs/custom-argument-matching.md
 
-%files help -f .mfiles-javadoc
-%doc NOTICE
+%files javadoc -f .mfiles-javadoc
+%license LICENSE
 
 %changelog
+* Tue Aug 18 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
+- upgrade the version to 2.23.9
+
 * Thu Apr 23 2020 wutao <wutao61@huawei.com> 1.10.19-19
 * delete useless patches
 
