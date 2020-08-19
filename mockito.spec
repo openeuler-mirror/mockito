@@ -5,8 +5,8 @@ Summary:             Tasty mocking framework for unit tests in Java
 License:             MIT
 URL:                 https://site.mockito.org/
 BuildArch:           noarch
-Source0:             %{name}-%{version}.tar.xz
-Source1:             make-%{name}-sourcetarball.sh
+Source0:             mockito-%{version}.tar.xz
+Source1:             make-mockito-sourcetarball.sh
 Source2:             mockito-core.pom
 Patch0:              use-unbundled-asm.patch
 BuildRequires:       maven-local mvn(junit:junit) mvn(net.bytebuddy:byte-buddy)
@@ -28,6 +28,7 @@ This package contains the API documentation for %{name}.
 %prep
 %setup -q
 %patch0
+rm -rf src/test/java/org/mockitousage/serialization/DeepStubsSerializableTest.java
 sed -e 's/@VERSION@/%{version}/' %{SOURCE2} > pom.xml
 cat > osgi.bnd <<EOF
 Automatic-Module-Name: org.mockito
@@ -53,11 +54,5 @@ EOF
 %license LICENSE
 
 %changelog
-* Tue Aug 18 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
-- upgrade the version to 2.23.9
-
-* Thu Apr 23 2020 wutao <wutao61@huawei.com> 1.10.19-19
-* delete useless patches
-
-* Thu Apr 2 2020 gulining <gulining1@huawei.com> - 1.10.19-18
-- Package init
+* Mon Aug 17 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
+- package init
