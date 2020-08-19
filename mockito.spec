@@ -30,6 +30,7 @@ This package contains the API documentation for %{name}.
 %patch0
 rm -rf src/test/java/org/mockitousage/serialization/DeepStubsSerializableTest.java
 rm -rf src/test/java/org/mockitousage/serialization/ParallelSerializationTest.java
+rm -rf src/test/java/org/mockitousage/serialization/AcrossClassLoaderSerializationTest.java
 sed -e 's/@VERSION@/%{version}/' %{SOURCE2} > pom.xml
 cat > osgi.bnd <<EOF
 Automatic-Module-Name: org.mockito
