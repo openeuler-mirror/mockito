@@ -1,6 +1,6 @@
 Name:                mockito
 Version:             2.23.9
-Release:             2
+Release:             1
 Summary:             Tasty mocking framework for unit tests in Java
 License:             MIT
 URL:                 https://site.mockito.org/
@@ -56,9 +56,6 @@ EOF
 %license LICENSE
 
 %changelog
-* Fri 28 Aug 2020 wangyue <wangyue92@huawei.com> - 2.23.9-2
-- fix changelog
-
 * Mon Aug 17 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
 - upgrade the version to 2.23.9
 
