@@ -57,4 +57,10 @@ EOF
 
 %changelog
 * Mon Aug 17 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
-- package init
+- upgrade the version to 2.23.9
+
+* Thu Apr 23 2020 wutao <wutao61@huawei.com> 1.10.19-19
+* delete useless patches
+
+* Thu Apr 2 2020 gulining <gulining1@huawei.com> - 1.10.19-18
+- Package init
