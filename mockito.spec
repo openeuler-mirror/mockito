@@ -1,6 +1,6 @@
 Name:                mockito
 Version:             2.23.9
-Release:             1
+Release:             2
 Summary:             Tasty mocking framework for unit tests in Java
 License:             MIT
 URL:                 https://site.mockito.org/
@@ -9,6 +9,7 @@ Source0:             mockito-%{version}.tar.xz
 Source1:             make-mockito-sourcetarball.sh
 Source2:             mockito-core.pom
 Patch0:              use-unbundled-asm.patch
+Patch1:              fix-strict-stubbing-profile-serialization-support.patch
 BuildRequires:       maven-local mvn(junit:junit) mvn(net.bytebuddy:byte-buddy)
 BuildRequires:       mvn(net.bytebuddy:byte-buddy-agent) mvn(org.apache.felix:maven-bundle-plugin)
 BuildRequires:       mvn(org.assertj:assertj-core) mvn(org.codehaus.mojo:exec-maven-plugin)
@@ -28,6 +29,12 @@ This package contains the API documentation for %{name}.
 %prep
 %setup -q
 %patch0
+%if "%{_build_arch}" == "riscv64"
+%patch1 -p1
+sed -i 's/int potentialOverhead = 1000;/int potentialOverhead = 5000;/' src/test/java/org/mockitousage/bugs/ConcurrentModificationExceptionOnMultiThreadedVerificationTest.java
+sed -i 's/long sleepyTime = 500L;/long sleepyTime = 2500L;/' src/test/java/org/mockitousage/stubbing/StubbingWithAdditionalAnswersTest.java
+sed -i 's/long sleepyTime = 500L;/long sleepyTime = 2500L;/' src/test/java/org/mockito/internal/stubbing/answers/AnswersWithDelayTest.java
+%endif
 rm -rf src/test/java/org/mockitousage/serialization/DeepStubsSerializableTest.java
 rm -rf src/test/java/org/mockitousage/serialization/ParallelSerializationTest.java
 rm -rf src/test/java/org/mockitousage/serialization/AcrossClassLoaderSerializationTest.java
@@ -56,6 +63,10 @@ EOF
 %license LICENSE
 
 %changelog
+* Sun Jun 05 2022 laokz <laokz@foxmail.com> - 2.23.9-2
+- add NotSerializableException patch from upstream v2.24.4 pull/1620
+- increase 3 tests timeout for riscv64
+
 * Mon Aug 17 2020 wangyue <wangyue92@huawei.com> - 2.23.9-1
 - upgrade the version to 2.23.9
 
